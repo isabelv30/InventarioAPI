@@ -45,39 +45,40 @@ namespace Api.Controllers.Inventario
         /// <summary>
         /// Obtiene un articulo por su ID.
         /// </summary>
-        /// <param name="articuloId">ID del articulo.</param>
-        [HttpGet("{articuloId:int}")]
-        public async Task<ActionResult<Articulos>> GetArticulo(int articuloId)
+        /// <param name="codigo">Codigo del articulo.</param>
+        [HttpGet("{codigo}")]
+        public async Task<ActionResult<Articulos>> GetArticulo(string codigo)
         {
             try
             {
                 using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
                 {
-                    var articulo = await connection.QueryAsync<Articulos>("select * from tblarticulos where id = @Id",
-                        new { Id = articuloId });
+                    var articulo = await connection.QueryAsync<Articulos>("select * from tblarticulos where codigo = @Codigo",
+                        new { Codigo = codigo });
                     return Ok(articulo.First());
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al obtener el artículo " + articuloId);
+                _logger.LogError(ex, "Error al obtener el artículo " + codigo);
                 return StatusCode(500, "Error al obtener el artículo.");
             }
         }
 
-        // <summary>
+        /// <summary>
         /// Crea un nuevo articulo.
         /// </summary>
         /// <param name="articulo">Información del articulo a crear.</param>
+        /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult<List<Articulos>>> Createarticulo(Articulos articulo)
+        public async Task<ActionResult<List<Articulos>>> CreateArticulo(Articulos articulo)
         {
             try
             {
                 using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
                 {
                     await connection.ExecuteAsync("INSERT INTO TblArticulos (Codigo, Stock, Nombre, Descripcion, PrecioCompra, PrecioVenta, CategoriaId, UnidadMedidaId, EstadoId) VALUES (@Codigo, @Stock, @Nombre, @Descripcion, @PrecioCompra, @PrecioVenta, @CategoriaId, @UnidadMedidaId, @EstadoId)", articulo);
-                    return Ok(await SelectAllarticulos(connection));
+                    return Ok(await SelectAllArticulos(connection));
                 }
             }
             catch (Exception ex)
@@ -99,7 +100,7 @@ namespace Api.Controllers.Inventario
                 using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
                 {
                     await connection.ExecuteAsync("UPDATE TblArticulos SET Codigo = @Codigo, Stock = @Stock, Nombre = @Nombre, Descripcion = @Descripcion, PrecioCompra = @PrecioCompra, PrecioVenta = @PrecioVenta, CategoriaId = @CategoriaId, UnidadMedidaId = @UnidadMedidaId, EstadoId = @EstadoId WHERE Id = @Id", articulo);
-                    return Ok(await SelectAllarticulos(connection));
+                    return Ok(await SelectAllArticulos(connection));
                 }
             }
             catch (Exception ex)
@@ -121,7 +122,7 @@ namespace Api.Controllers.Inventario
                 using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
                 {
                     await connection.ExecuteAsync("delete from tblarticulos where id = @id", articulo);
-                    return Ok(await SelectAllarticulos(connection));
+                    return Ok(await SelectAllArticulos(connection));
                 }
             }
             catch (Exception ex)
@@ -136,9 +137,29 @@ namespace Api.Controllers.Inventario
         /// </summary>
         /// <param name="connection">Cadena de conexión a la base de datos.</param>
         /// <returns>Todos los articulos de la tabla tblarticulos.</returns>
-        private static async Task<IEnumerable<Articulos>> SelectAllarticulos(SqlConnection connection)
+        private static async Task<IEnumerable<Articulos>> SelectAllArticulos(SqlConnection connection)
         {
             return await connection.QueryAsync<Articulos>("select * from tblarticulos");
+        }
+
+        /// <summary>
+        /// Selecciona todos los articulos.
+        /// </summary>
+        /// <param name="connection">Cadena de conexión a la base de datos.</param>
+        /// <returns>Todos los articulos de la tabla tblarticulos.</returns>
+        private static async Task<bool> ArticuloExiste(SqlConnection connection, Articulos articulo)
+        {
+            var respuesta = await connection.QueryAsync<Articulos>("select * from tblarticulos where codigo = @codigo ", 
+                new { codigo = articulo.Codigo });
+
+            if (respuesta == null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

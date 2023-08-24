@@ -7,6 +7,6 @@
         public string Descripcion { get; set; } = string.Empty;
 
         public Modulos? Modulo { get; set; }
-        public Roles? Rol { get; set; }
+        public List<Roles>? Rol { get; set; }
     }
 }

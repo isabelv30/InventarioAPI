@@ -8,6 +8,6 @@
         public int ModuloId { get; set; }
 
         public Modulos? Modulo { get; set; }
-        public Acciones? Acciones { get; set; }
+        public List<Acciones>? Acciones { get; set; }
     }
 }
