@@ -8,7 +8,7 @@ using System.Data.SqlClient;
 namespace Api.Controllers.General
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class PaisesController : Controller
     {
         private readonly IConfiguration _configuration;

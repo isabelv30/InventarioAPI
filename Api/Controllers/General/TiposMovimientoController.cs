@@ -8,7 +8,7 @@ using System.Data.SqlClient;
 namespace Api.Controllers.General
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class TiposMovimientoController : Controller
     {
         private readonly IConfiguration _configuration;
@@ -24,7 +24,7 @@ namespace Api.Controllers.General
         /// <summary>
         /// Obtiene todos los Tipos de Movimiento.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Los tipos de movimiento de la base de datos.</returns>
         [HttpGet]
         public async Task<ActionResult<List<TipoMovimiento>>> GetAlltiposMovimiento()
         {
@@ -33,13 +33,25 @@ namespace Api.Controllers.General
                 using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
                 {
                     var tiposMovimiento = await connection.QueryAsync<TipoMovimiento>("select * from TblTiposMovimiento");
-                    return Ok(tiposMovimiento.ToList());
+
+                    if (tiposMovimiento.Any())
+                    {
+                        return Ok(tiposMovimiento.ToList());
+                    }
+                    else
+                    {
+                        throw new ApiException(404, "No hay tipos de movimiento registrados.");
+                    }
                 }
+            }
+            catch (ApiException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener los tipos de movimiento.");
-                return StatusCode(500, "Error al obtener los tipos de movimiento.");
+                throw new ApiException(500, "Ha ocurrido un error interno al obtener los tipos de movimiento. Detalle: " + ex.Message);
             }
         }
 
@@ -56,13 +68,25 @@ namespace Api.Controllers.General
                 {
                     var tipoMovimiento = await connection.QueryAsync<TipoMovimiento>("select * from TblTiposMovimiento where codigo = @codigo",
                         new { codigo = codigo });
-                    return Ok(tipoMovimiento.First());
+
+                    if (tipoMovimiento.Any())
+                    {
+                        return Ok(tipoMovimiento.First());
+                    }
+                    else
+                    {
+                        throw new ApiException(404, "El tipo de movimiento con el código '" + codigo + "' no está registrado.");
+                    }
                 }
+            }
+            catch (ApiException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener el tipo de movimiento " + codigo);
-                return StatusCode(500, "Error al obtener el tipo de movimiento.");
+                throw new ApiException(500, "Ha ocurrido un error interno al obtener el tipo de movimiento. Detalle: " + ex.Message);
             }
         }
 
@@ -79,32 +103,25 @@ namespace Api.Controllers.General
                 using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
                 {
                     var result = await SelectTiposMovimientoId(connection, tipoMovimiento.Codigo);
-                    if (result.Count() == 0)
+                    if (!result.Any())
                     {
                         await connection.ExecuteAsync("insert into TblTiposMovimiento ([Codigo], [Nombre], [Descripcion]) values (@Codigo, @Nombre, @Descripcion)", tipoMovimiento);
                         return Ok(await SelectAllTiposMovimiento(connection));
                     }
                     else
                     {
-                        throw new ("El tipo de movimiento con el código " + tipoMovimiento.Codigo + " ya está registrado.");
+                        throw new ApiException(409, "El tipo de movimiento con el código '" + tipoMovimiento.Codigo + "' ya está registrado.");
                     }
                 }
+            }
+            catch (ApiException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al crear el tipo de movimiento.");
-
-                // Se obtiene el mensaje de la excepción original
-                string originalErrorMessage = ex.Message;
-
-                if (originalErrorMessage.Contains("ya está registrado"))
-                {
-                    throw new ApiException(409, originalErrorMessage);
-                }
-                else
-                {
-                    throw new ApiException(500, "Ha ocurrido un error interno al crear el tipo de movimiento.");
-                }
+                throw new ApiException(500, "Ha ocurrido un error interno al crear el tipo de movimiento. Detalle: " + ex.Message);
             }
         }
 
@@ -121,21 +138,25 @@ namespace Api.Controllers.General
                 using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
                 {
                     var result = await SelectTiposMovimientoId(connection, tipoMovimiento.Codigo);
-                    if (result != null)
+                    if (result.Count() > 0)
                     {
                         await connection.ExecuteAsync("update TblTiposMovimiento set nombre = @nombre, descripcion = @descripcion where codigo = @codigo", tipoMovimiento);
                         return Ok(await SelectAllTiposMovimiento(connection));
                     }
-                    else 
-                    { 
-                        return StatusCode(500, "El tipo de movimiento con el código " + tipoMovimiento.Codigo + " no existe.");
+                    else
+                    {
+                        throw new ApiException(404, "El tipo de movimiento con el código '" + tipoMovimiento.Codigo + "' no está registrado.");
                     }
                 }
+            }
+            catch (ApiException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al actualizar el tipo de movimiento " + tipoMovimiento.Id);
-                return StatusCode(500, "Error al actualizar el tipo de movimiento.");
+                throw new ApiException(500, "Ha ocurrido un error interno al actualizar el tipo de movimiento. Detalle: " + ex.Message);
             }
         }
 
@@ -152,21 +173,25 @@ namespace Api.Controllers.General
                 using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
                 {
                     var result = await SelectTiposMovimientoId(connection, tipoMovimiento.Codigo);
-                    if (result != null)
+                    if (result.Count() > 0)
                     {
                         await connection.ExecuteAsync("delete from TblTiposMovimiento where codigo = @codigo", tipoMovimiento);
                         return Ok(await SelectAllTiposMovimiento(connection));
                     }
                     else
                     {
-                        return StatusCode(500, "El tipo de movimiento con el código " + tipoMovimiento.Codigo + " no existe.");
+                        throw new ApiException(404, "El tipo de movimiento con el código '" + tipoMovimiento.Codigo + "' no está registrado.");
                     }
                 }
+            }
+            catch (ApiException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al eliminar el tipo de movimiento " + tipoMovimiento.Id);
-                return StatusCode(500, "Error al eliminar el tipo de movimiento.");
+                throw new ApiException(500, "Ha ocurrido un error interno al eliminar el tipo de movimiento. Detalle: " + ex.Message);
             }
         }
 
@@ -181,11 +206,11 @@ namespace Api.Controllers.General
         }
 
         /// <summary>
-        /// Consulta un tipo de  movimiento por su identificador.
+        /// Consulta un tipo de movimiento por su identificador.
         /// </summary>
         /// <param name="connection">Cadena de conexión a la base de datos.</param>
         /// <param name="codigo">Identificador del tipo de movimiento.</param>
-        /// <returns>Tipo de movimiento o null en caso de no encontrarlo.</returns>
+        /// <returns>Tipo de movimiento o 0 en caso de no encontrarlo.</returns>
         private static async Task<IEnumerable<TipoMovimiento>> SelectTiposMovimientoId(SqlConnection connection, string codigo)
         {
             return await connection.QueryAsync<TipoMovimiento>("select * from tbltiposMovimiento where codigo = @codigo",

@@ -1,4 +1,5 @@
-﻿using Api.Models.General;
+﻿using Api.Errors;
+using Api.Models.General;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlClient;
@@ -6,7 +7,7 @@ using System.Data.SqlClient;
 namespace Api.Controllers.General
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class CiudadesController : Controller
     {
         private readonly IConfiguration _configuration;
@@ -32,18 +33,33 @@ namespace Api.Controllers.General
                     var paises = await connection.QueryAsync<Pais>("select * from TblPaises");
                     var departamentos = await connection.QueryAsync<Departamento>("select * from tbldepartamentos");
                     var ciudades = await connection.QueryAsync<Ciudad>("select * from tblciudades");
-                    foreach (var c in ciudades)
+
+                    if (ciudades.Any())
                     {
-                        c.Departamento = departamentos.Where(x => x.Id == c.DepartamentoId).FirstOrDefault();
-                        c.Pais = paises.Where(p => p.Id == c.PaisId).FirstOrDefault();
+                        foreach (var c in ciudades)
+                        {
+                            if(departamentos.Any())
+                                c.Departamento = departamentos.Where(x => x.Id == c.DepartamentoId).FirstOrDefault();
+
+                            if(paises.Any())
+                                c.Pais = paises.Where(p => p.Id == c.PaisId).FirstOrDefault();
+                        }
+                        return Ok(ciudades.ToList());
                     }
-                    return Ok(ciudades.ToList());
+                    else
+                    {
+                        throw new ApiException(404, "No hay ciudades registradas.");
+                    }
                 }
+            }
+            catch (ApiException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener las ciudades.");
-                return StatusCode(500, "Error al obtener las ciudades.");
+                throw new ApiException(500, "Ha ocurrido un error interno al obtener las ciudades. Detalle: " + ex.Message);
             }
         }
 
@@ -51,6 +67,7 @@ namespace Api.Controllers.General
         /// Obtiene una ciudad por su ID.
         /// </summary>
         /// <param name="ciudadId">ID de la ciudad.</param>
+        /// <returns>La ciudad que corresponde al ID <paramref name="ciudadId"/> en la base de datos.</returns>
         [HttpGet("{ciudadId:int}")]
         public async Task<ActionResult<Ciudad>> GetCiudad(int ciudadId)
         {
@@ -61,26 +78,37 @@ namespace Api.Controllers.General
                     var ciudad = await connection.QueryAsync<Ciudad>("select * from tblciudades where id = @Id",
                         new { Id = ciudadId });
 
-                    foreach (var c in ciudad)
+                    if(ciudad.Any())
                     {
-                        // Tare el pais de la ciudad
-                        var paises = await connection.QueryAsync<Pais>("select * from TblPaises where id = @Id",
-                            new { Id = c.PaisId });
-                        c.Pais = paises.FirstOrDefault();
+                        foreach (var c in ciudad)
+                        {
+                            // Trae el país de la ciudad
+                            var pais = await connection.QueryAsync<Pais>("select * from TblPaises where id = @Id", new { Id = c.PaisId });
+                            if (pais.Any())
+                                c.Pais = pais.FirstOrDefault();
 
-                        // Trae el departamento de la ciudad
-                        var departamentos = await connection.QueryAsync<Departamento>("select * from tbldepartamentos", 
-                            new { Id = c.DepartamentoId });
-                        c.Departamento = departamentos.FirstOrDefault();
+                            // Trae el departamento de la ciudad
+                            var departamento = await connection.QueryAsync<Departamento>("select * from tbldepartamentos", new { Id = c.DepartamentoId });
+                            if(departamento.Any())
+                                c.Departamento = departamento.FirstOrDefault();
+                        }
+
+                        return Ok(ciudad.FirstOrDefault());
                     }
-
-                    return Ok(ciudad.FirstOrDefault());
+                    else
+                    {
+                        throw new ApiException(404, "La ciudad con el id '" + ciudadId + "' no está registrada.");
+                    }
                 }
+            }
+            catch (ApiException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener la ciudad " + ciudadId);
-                return StatusCode(500, "Error al obtener la ciudad.");
+                throw new ApiException(500, "Ha ocurrido un error interno al obtener la ciudad. Detalle: " + ex.Message);
             }
         }
     }
