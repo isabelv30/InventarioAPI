@@ -16,7 +16,11 @@
 
   <ItemGroup>
     <Folder Include="Controllers\Facturacion\" />
-    <Folder Include="Controllers\Seguridad\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Aplicacion\Aplicacion.csproj" />
+    <ProjectReference Include="..\Dominio\Dominio.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,5 @@
-﻿using Api.Errors;
-using Api.Models.General;
-using Api.Models.Inventario;
+﻿using Api.Dominio.Inventario;
+using Api.Errors;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlClient;
@@ -219,7 +218,7 @@ namespace Api.Controllers.Inventario
         /// <returns>La categoría que corresponde al ID <paramref name="id"/> en la base de datos.</returns>
         private static async Task<IEnumerable<Categorias>> SelectCategoriaId(SqlConnection connection, int id)
         {
-            return await connection.QueryAsync<Categorias>("select * from tblcategorias where id = @Id", new { id = id });
+            return await connection.QueryAsync<Categorias>("select * from tblcategorias where id = @Id", new { id });
         }
     }
 }

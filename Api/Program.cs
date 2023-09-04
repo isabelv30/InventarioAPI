@@ -1,4 +1,5 @@
 using Api.Errors;
+using Api.Global;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+// Inyección de dependencias
+InyeccionDependencias.GenerateService(builder.Configuration.GetConnectionString("sqlserver"));
 // Manejo de errores
 builder.Services.AddControllers(options =>
 {
@@ -20,8 +23,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-
 
 app.UseHttpsRedirection();
 

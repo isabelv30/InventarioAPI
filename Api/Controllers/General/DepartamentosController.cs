@@ -1,6 +1,5 @@
-﻿using Api.Errors;
-using Api.Models.General;
-using Api.Models.Inventario;
+﻿using Api.Dominio.General;
+using Api.Errors;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlClient;

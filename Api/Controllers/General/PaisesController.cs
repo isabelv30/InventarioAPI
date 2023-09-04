@@ -1,6 +1,6 @@
 ﻿using Api.Controllers.Inventario;
-using Api.Models.General;
-using Api.Models.Inventario;
+using Api.Dominio.General;
+using Api.Errors;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlClient;
@@ -25,20 +25,31 @@ namespace Api.Controllers.General
         /// Obtiene todos los pais.
         /// </summary>
         [HttpGet]
-        public async Task<ActionResult<List<Pais>>> GetAllPais()
+        public async Task<ActionResult<List<Pais>>> GetAllPaises()
         {
             try
             {
                 using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
                 {
-                    var pais = await connection.QueryAsync<Pais>("select * from TblPaises");
-                    return Ok(pais.ToList());
+                    var pais = await connection.QueryAsync<Pais>("select * from tblpaises");
+                    if (pais.Any())
+                    {
+                        return Ok(pais.ToList());
+                    }
+                    else
+                    {
+                        throw new ApiException(404, "No hay personas registradas.");
+                    }
                 }
+            }
+            catch (ApiException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al obtener pais.");
-                return StatusCode(500, "Error al obtener pais.");
+                _logger.LogError(ex, "Error al obtener los países.");
+                throw new ApiException(500, "Ha ocurrido un error interno al obtener los países. Detalle: " + ex.Message);
             }
         }
 
@@ -53,92 +64,27 @@ namespace Api.Controllers.General
             {
                 using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
                 {
-                    var pais = await connection.QueryAsync<Pais>("select * from TblPaises where id = @Id",
+                    var pais = await connection.QueryAsync<Pais>("select * from tblpaises where id = @Id",
                         new { Id = paisId });
-                    return Ok(pais.First());
+                    if (pais.Any())
+                    {
+                        return Ok(pais.First());
+                    }
+                    else
+                    {
+                        throw new ApiException(404, "El país con el ID '" + paisId + "' no está registrado.");
+                    }
                 }
+            }
+            catch (ApiException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener el pais " + paisId);
-                return StatusCode(500, "Error al obtener el pais.");
+                throw new ApiException(500, "Ha ocurrido un error interno al obtener el país. Detalle: " + ex.Message);
             }
-        }
-
-        // <summary>
-        /// Crea un nuevo pais.
-        /// </summary>
-        /// <param name="pais">Información del pais a crear.</param>
-        //[HttpPost]
-        //public async Task<ActionResult<List<Pais>>> CreatePais(Pais pais)
-        //{
-        //    try
-        //    {
-        //        using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-        //        {
-        //            await connection.ExecuteAsync("insert into TblPaises ([Nombre], [CodigoIso2], [CodigoIso3]) values (@Nombre, @CodigoIso2, @CodigoIso3)", pais);
-        //            return Ok(await SelectAllPais(connection));
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, "Error al crear el pais.");
-        //        return StatusCode(500, "Error al crear el pais.");
-        //    }
-        //}
-
-        // <summary>
-        /// Actualiza un pais.
-        /// </summary>
-        /// <param name="pais">Información del pais a actualizar.</param>
-        //[HttpPut]
-        //public async Task<ActionResult<List<Pais>>> UpdatePais(Pais pais)
-        //{
-        //    try
-        //    {
-        //        using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-        //        {
-        //            await connection.ExecuteAsync("update TblPaises set Nombre = @Nombre, CodigoIso2 = @CodigoIso2, CodigoIso3 = @CodigoIso3 where Id = @Id", pais);
-        //            return Ok(await SelectAllPais(connection));
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, "Error al actualizar el pais " + pais.Id);
-        //        return StatusCode(500, "Error al actualizar el pais.");
-        //    }
-        //}
-
-        // <summary>
-        /// Elimina un pais.
-        /// </summary>
-        /// <param name="pais">Información del pais a eliminar.</param>
-        //[HttpDelete]
-        //public async Task<ActionResult<List<Pais>>> DeletePais(Pais pais)
-        //{
-        //    try
-        //    {
-        //        using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-        //        {
-        //            await connection.ExecuteAsync("delete from TblPaises where id = @id", pais);
-        //            return Ok(await SelectAllPais(connection));
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, "Error al eliminar el pais " + pais.Id);
-        //        return StatusCode(500, "Error al eliminar el pais.");
-        //    }
-        //}
-
-        /// <summary>
-        /// Selecciona todos los pais.
-        /// </summary>
-        /// <param name="connection">Cadena de conexión a la base de datos.</param>
-        /// <returns>Todos los pais de la tabla TblPaises.</returns>
-        private static async Task<IEnumerable<Pais>> SelectAllPais(SqlConnection connection)
-        {
-            return await connection.QueryAsync<Pais>("select * from TblPaises");
         }
     }
 }

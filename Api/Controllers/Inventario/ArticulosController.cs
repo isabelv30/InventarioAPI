@@ -1,7 +1,7 @@
 ﻿using Api.Controllers;
+using Api.Dominio.Inventario;
 using Api.Errors;
-using Api.Models.General;
-using Api.Models.Inventario;
+using Aplicacion.Servicios;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -16,11 +16,15 @@ namespace Api.Controllers.Inventario
         private readonly IConfiguration _configuration;
         private readonly ILogger<ArticulosController> _logger;
 
+        private readonly IServicioAplicacion<Articulos> _servicioDeAplicacion;
+
         public ArticulosController(ILogger<ArticulosController> logger,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IServicioAplicacion<Articulos> servicioDeAplicacion)
         {
             _configuration = configuration;
             _logger = logger;
+            _servicioDeAplicacion = servicioDeAplicacion;
         }
 
         /// <summary>
@@ -61,7 +65,7 @@ namespace Api.Controllers.Inventario
         /// <summary>
         /// Obtiene un artículo por su ID.
         /// </summary>
-        /// <param name="codigo">Codigo del artículo.</param>
+        /// <param name="codigo">Obtiene un artículo por su ID.</param>
         /// <returns>El artículo específico que se consulta por el codigo.</returns>
         /// <exception cref="ApiException">Se lanza si no se encuentra el artículo correspondiente al código <paramref name="codigo"/> del artículo.</exception>
         [HttpGet("{codigo}")]
@@ -96,9 +100,9 @@ namespace Api.Controllers.Inventario
         }
 
         /// <summary>
-        /// Crea un nuevo articulo.
+        /// Crea un nuevo artículo.
         /// </summary>
-        /// <param name="articulo">Información del articulo a crear.</param>
+        /// <param name="articulo">Información del artículo a crear.</param>
         /// <returns>Los artículos que devuelve el método SelectAllArticulos.</returns>
         /// <exception cref="ApiException">Se lanza si ya existe el artículo correspondiente al código del artículo <paramref name="articulo"/>.</exception>
         [HttpPost]
