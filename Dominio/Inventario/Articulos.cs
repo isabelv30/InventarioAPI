@@ -15,8 +15,8 @@ namespace Api.Dominio.Inventario
         public int UnidadMedidaId { get; set; }
         public int EstadoId { get; set; }
 
-        public Categorias? Categoria { get; set; }
-        public UnidadesMedida? UnidadesMedida { get; set; }
-        public Estados? Estado { get; set; }
+        //public Categorias? Categoria { get; set; }
+        //public UnidadesMedida? UnidadesMedida { get; set; }
+        //public Estados? Estado { get; set; }
     }
 }

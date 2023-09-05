@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Aplicacion.General
+namespace Aplicacion.ServiciosGlobales
 {
     public interface IServicioGlobal
     {

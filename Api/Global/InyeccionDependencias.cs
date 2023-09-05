@@ -1,12 +1,17 @@
 ﻿using AccesoDatos.Conexion;
 using AccesoDatos.Repositorio;
-using Aplicacion.General;
+using Aplicacion.ServiciosGlobales;
 using Aplicacion.Servicios;
 
 namespace Api.Global
 {
     public class InyeccionDependencias
     {
+        /// <summary>
+        /// Configura y crea un proveedor de servicios para la inyección de dependencias.
+        /// </summary>
+        /// <param name="cadena">La cadena de conexión que se utilizará para la configuración.</param>
+        /// <returns>Un proveedor de servicios configurado para la inyección de dependencias.</returns>
         public static IServiceProvider ConfigureServices(string cadena)
         {
             var services = new ServiceCollection();

@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using AccesoDatos.Conexion;
+using Dapper;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -11,9 +12,9 @@ namespace AccesoDatos.Repositorio
 {
     public class Repositorio<T> : IRepositorio<T> where T : class
     {
-        private readonly string _connectionString;
+        private readonly ICadenaConexion _connectionString;
 
-        public Repositorio(string connectionString)
+        public Repositorio(ICadenaConexion connectionString)
         {
             _connectionString = connectionString;
         }
@@ -25,16 +26,13 @@ namespace AccesoDatos.Repositorio
         /// <param name="sql">La consulta SQL que se va a ejecutar.</param>
         /// <param name="parameters">Los parámetros de la consulta SQL (opcional).</param>
         /// <returns>Una colección de objetos de tipo T que representan los resultados de la consulta.</returns>
-        public async Task<IEnumerable<T>> ExecuteQueryAsync<T>(string sql, object parameters = null)
+        public async Task<IEnumerable<T>> ExecuteQueryAsync<T>(string sql, object? parameters = null)
         {
             // Establece una conexión a la base de datos utilizando la cadena de conexión proporcionada.
-            using (IDbConnection dbConnection = new SqlConnection(_connectionString))
+            using (var connection = await _connectionString.CrearCadenaAsync())
             {
-                // Abre la conexión a la base de datos.
-                dbConnection.Open();
-                
                 // Ejecuta la consulta SQL de forma asincrónica y mapea los resultados a objetos de tipo T.
-                return await dbConnection.QueryAsync<T>(sql, parameters, commandType: CommandType.StoredProcedure);
+                return await connection.QueryAsync<T>(sql, parameters);
             }
         }
 
@@ -45,16 +43,13 @@ namespace AccesoDatos.Repositorio
         /// <param name="sql">La consulta SQL que se va a ejecutar.</param>
         /// <param name="parameters">Los parámetros de la consulta SQL (opcional).</param>
         /// <returns>El valor escalar resultante de la consulta.</returns>
-        public async Task<T> ExecuteScalarAsync<T>(string sql, object parameters = null)
+        public async Task<T> ExecuteScalarAsync<T>(string sql, object? parameters = null)
         {
             // Establece una conexión a la base de datos utilizando la cadena de conexión proporcionada.
-            using (IDbConnection dbConnection = new SqlConnection(_connectionString))
+            using (var connection = await _connectionString.CrearCadenaAsync())
             {
-                // Abre la conexión a la base de datos.
-                dbConnection.Open();
-
                 // Ejecuta la consulta SQL de forma asincrónica y devuelve un valor escalar del tipo especificado.
-                return await dbConnection.ExecuteScalarAsync<T>(sql, parameters);
+                return await connection.ExecuteScalarAsync<T>(sql, parameters);
             }
         }
 
@@ -64,16 +59,13 @@ namespace AccesoDatos.Repositorio
         /// <param name="sql">La consulta SQL que se va a ejecutar.</param>
         /// <param name="parameters">Los parámetros de la consulta SQL (opcional).</param>
         /// <returns>El número de filas afectadas por la consulta.</returns>
-        public async Task<int> ExecuteAsync(string sql, object parameters = null)
+        public async Task<int> ExecuteAsync(string sql, object? parameters = null)
         {
             // Establece una conexión a la base de datos utilizando la cadena de conexión proporcionada.
-            using (IDbConnection dbConnection = new SqlConnection(_connectionString))
+            using (var connection = await _connectionString.CrearCadenaAsync())
             {
-                // Abre la conexión a la base de datos.
-                dbConnection.Open();
-
                 // Ejecuta la consulta SQL de forma asincrónica y devuelve el número de filas afectadas.
-                return await dbConnection.ExecuteAsync(sql, parameters);
+                return await connection.ExecuteAsync(sql, parameters);
             }
         }
 
@@ -87,13 +79,11 @@ namespace AccesoDatos.Repositorio
         public async Task<IEnumerable<T>> ExecuteStoredProcedureAsync<T>(string storedProcedureName, object parameters = null)
         {
             // Establece una conexión a la base de datos utilizando la cadena de conexión proporcionada.
-            using (IDbConnection dbConnection = new SqlConnection(_connectionString))
+            using (var connection = await _connectionString.CrearCadenaAsync())
             {
-                // Abre la conexión a la base de datos.
-                dbConnection.Open();
 
                 // Ejecuta el procedimiento almacenado utilizando Dapper.
-                var result = await dbConnection.QueryAsync<T>(
+                var result = await connection.QueryAsync<T>(
                     storedProcedureName,
                     parameters,
                     commandType: CommandType.StoredProcedure

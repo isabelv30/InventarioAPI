@@ -24,7 +24,7 @@ namespace Aplicacion.Servicios
         /// <param name="sql">La consulta SQL que se ejecutará.</param>
         /// <param name="parametros">Los parámetros opcionales que se pueden pasar a la consulta.</param>
         /// <returns>Una colección de tipo T que contiene el resultado de la consulta. </returns>
-        public async Task<IEnumerable<T>> EjecutarConsultaSqlAsync<T>(string sql, object parametros = null)
+        public async Task<IEnumerable<T>> EjecutarConsultaSqlAsync<T>(string sql, object? parametros = null)
         {
             // Este método invoca el correspondiente método de la capa de acceso a datos.
             return await _repositorio.ExecuteQueryAsync<T>(sql, parametros);
@@ -37,7 +37,7 @@ namespace Aplicacion.Servicios
         /// <param name="sql">La consulta SQL que se ejecutará.</param>
         /// <param name="parametros">Los parámetros opcionales que se pueden pasar a la consulta.</param>
         /// <returns>Un valor escalar de tipo T que contiene el resultado de la consulta.</returns>
-        public async Task<T> EjecutarScalarSqlAsync<T>(string sql, object parametros = null)
+        public async Task<T> EjecutarScalarSqlAsync<T>(string sql, object? parametros = null)
         {
             // Este método invoca el correspondiente método de la capa de acceso a datos.
             return await _repositorio.ExecuteScalarAsync<T>(sql, parametros);
@@ -49,7 +49,7 @@ namespace Aplicacion.Servicios
         /// <param name="sql">El comando SQL que se ejecutará.</param>
         /// <param name="parametros">Los parámetros opcionales que se pueden pasar al comando.</param>
         /// <returns>El número de filas afectadas por el comando SQL.</returns>
-        public async Task<int> EjecutarSqlAsync(string sql, object parametros = null)
+        public async Task<int> EjecutarSqlAsync(string sql, object? parametros = null)
         {
             // Este método invoca el correspondiente método de la capa de acceso a datos.
             return await _repositorio.ExecuteAsync(sql, parametros);
@@ -62,7 +62,7 @@ namespace Aplicacion.Servicios
         /// <param name="sql">El nombre o código del procedimiento almacenado SQL que se ejecutará.</param>
         /// <param name="parametros">Los parámetros opcionales que se pueden pasar al procedimiento almacenado.</param>
         /// <returns>Una colección de tipo T que contiene el resultado del procedimiento almacenado.</returns>
-        public async Task<IEnumerable<T>> ProcAlmacenadoSqlAsync<T>(string sql, object parametros = null)
+        public async Task<IEnumerable<T>> ProcedimientoSqlAsync<T>(string sql, object parametros = null)
         {
             // Este método invoca el correspondiente método de la capa de acceso a datos.
             return await _repositorio.ExecuteStoredProcedureAsync<T>(sql, parametros);

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Aplicacion.General
+namespace Aplicacion.ServiciosGlobales
 {
-    public class ServicioGlobal
+    public class ServicioGlobal : IServicioGlobal
     {
         // Instancia única del servicio
         private static readonly Lazy<ServicioGlobal> instance = new(() => new ServicioGlobal());

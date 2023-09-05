@@ -15,7 +15,7 @@ namespace AccesoDatos.Repositorio
         /// <param name="sql">La consulta SQL que se ejecutará.</param>
         /// <param name="parameters">Los parámetros opcionales que se pueden pasar a la consulta.</param>
         /// <returns>Una tarea que representa la operación asincrónica y que devuelve una colección de tipo T que contiene el resultado de la consulta.</returns>
-        Task<IEnumerable<T>> ExecuteQueryAsync<T>(string sql, object parameters = null);
+        Task<IEnumerable<T>> ExecuteQueryAsync<T>(string sql, object? parameters = null);
 
         /// <summary>
         /// Ejecuta una consulta SQL de forma asincrónica y devuelve un único valor escalar de tipo T.
@@ -24,7 +24,7 @@ namespace AccesoDatos.Repositorio
         /// <param name="sql">La consulta SQL que se ejecutará.</param>
         /// <param name="parameters">Los parámetros opcionales que se pueden pasar a la consulta.</param>
         /// <returns>Una tarea que representa la operación asincrónica y que devuelve un valor escalar de tipo T que contiene el resultado de la consulta.</returns>
-        Task<T> ExecuteScalarAsync<T>(string sql, object parameters = null);
+        Task<T> ExecuteScalarAsync<T>(string sql, object? parameters = null);
 
         /// <summary>
         /// Ejecuta un comando SQL de forma asincrónica (por ejemplo, INSERT, UPDATE, DELETE) y devuelve el número de filas afectadas.
@@ -32,7 +32,7 @@ namespace AccesoDatos.Repositorio
         /// <param name="sql">El comando SQL que se ejecutará.</param>
         /// <param name="parameters">Los parámetros opcionales que se pueden pasar al comando.</param>
         /// <returns>Una tarea que representa la operación asincrónica y que devuelve el número de filas afectadas por el comando SQL.</returns>
-        Task<int> ExecuteAsync(string sql, object parameters = null);
+        Task<int> ExecuteAsync(string sql, object? parameters = null);
 
         /// <summary>
         /// Ejecuta un procedimiento almacenado SQL de forma asincrónica y devuelve el resultado como una colección de tipo T.

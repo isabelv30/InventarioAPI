@@ -8,7 +8,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 // Inyección de dependencias
-InyeccionDependencias.GenerateService(builder.Configuration.GetConnectionString("sqlserver"));
+InyeccionDependencias.GenerateService(builder.Configuration.GetConnectionString("DefaultConnection"));
 // Manejo de errores
 builder.Services.AddControllers(options =>
 {
