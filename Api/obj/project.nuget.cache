@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "v+1+Yk0w0bKHl+jPL9++gloQcqQpjgBFH0CVBVAvOREkRLjRJp6tYoRoiSrYquI1lDSOnrpcaqBeTL/tGQlKjw==",
+  "dgSpecHash": "mfbtJxftj/bh2CpVcDvsVlJl3FjZ3ZXaM0Hwr164kZyokCjDL2dnBsV105jM5lz+gNSnboMDCghQJkFp0yhy0g==",
   "success": true,
-  "projectFilePath": "C:\\Users\\ijaramillo\\Documentos\\ProyectoInventario\\Api\\Api.csproj",
+  "projectFilePath": "D:\\Me\\InventarioAPI\\Api\\Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ijaramillo\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\ijaramillo\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",
