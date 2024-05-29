@@ -26,13 +26,13 @@ namespace Api.Controllers.Inventario
         /// <returns>Una lista de las categorías en la base de datos.</returns>
         /// <exception cref="ApiException">Se lanza si no se encuentran categorías registradas.</exception>
         [HttpGet]
-        public async Task<ActionResult<List<Categorias>>> GetAllCategorias()
+        public async Task<ActionResult<List<ArticulosCategoria>>> GetAllCategorias()
         {
             try
             {
                 using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
                 {
-                    var categorias = await connection.QueryAsync<Categorias>("select * from tblcategorias");
+                    var categorias = await connection.QueryAsync<ArticulosCategoria>("select * from articuloscategoria");
                     
                     if(categorias.Any())
                     {
@@ -62,14 +62,13 @@ namespace Api.Controllers.Inventario
         /// <returns>La categoría que corresponde al ID <paramref name="categoriaId"/> en la base de datos.</returns>
         /// <exception cref="ApiException">Se lanza si no se encuentra la categoría correspondiente al ID <paramref name="categoriaId"/>.</exception>
         [HttpGet("{categoriaId:int}")]
-        public async Task<ActionResult<Categorias>> GetCategoria(int categoriaId)
+        public async Task<ActionResult<ArticulosCategoria>> GetCategoria(int categoriaId)
         {
             try
             {
                 using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
                 {
-                    var categoria = await connection.QueryAsync<Categorias>("select * from tblcategorias where id = @Id",
-                        new { Id = categoriaId });
+                    var categoria = await connection.QueryAsync<ArticulosCategoria>($"select * from articuloscategoria where id = {categoriaId}");
                     
                     if (categoria.Any())
                     {
@@ -99,7 +98,7 @@ namespace Api.Controllers.Inventario
         /// <returns>Las categorías en la base de datos. Consulte <see cref="SelectAllCategorias"/> para obtener más detalles.</returns>
         /// <exception cref="ApiException">Se lanza si ya existe la categoría correspondiente al ID de la categoría <paramref name="categoria"/>.</exception>
         [HttpPost]
-        public async Task<ActionResult<List<Categorias>>> CreateCategoria(Categorias categoria)
+        public async Task<ActionResult<List<ArticulosCategoria>>> CreateCategoria(ArticulosCategoria categoria)
         {
             try
             {
@@ -108,7 +107,7 @@ namespace Api.Controllers.Inventario
                     var result = await SelectCategoriaId(connection, categoria.Id);
                     if (!result.Any())
                     {
-                        await connection.ExecuteAsync("insert into tblcategorias (nombre, descripcion) values (@nombre, @descripcion)", categoria);
+                        await connection.ExecuteAsync($"insert into articuloscategoria (nombre, descripcion) values ('{categoria.Nombre}', '{categoria.Descripcion}')");
                         return Ok(await SelectAllCategorias(connection));
                     }
                     else
@@ -135,7 +134,7 @@ namespace Api.Controllers.Inventario
         /// <returns>Las categorías en la base de datos. Consulte <see cref="SelectAllCategorias"/> para obtener más detalles.</returns>
         /// <exception cref="ApiException">Se lanza si no se encuentra la categoría correspondiente al ID de la categoría <paramref name="categoria"/>.</exception>
         [HttpPut]
-        public async Task<ActionResult<List<Categorias>>> UpdateCategoria(Categorias categoria)
+        public async Task<ActionResult<List<ArticulosCategoria>>> UpdateCategoria(ArticulosCategoria categoria)
         {
             try
             {
@@ -171,7 +170,7 @@ namespace Api.Controllers.Inventario
         /// <returns>Las categorías en la base de datos. Consulte <see cref="SelectAllCategorias"/> para obtener más detalles.</returns>
         /// <exception cref="ApiException">Se lanza si no se encuentra la categoría correspondiente al ID de la categoría <paramref name="categoria"/>.</exception>
         [HttpDelete]
-        public async Task<ActionResult<List<Categorias>>> DeleteCategoria(Categorias categoria)
+        public async Task<ActionResult<List<ArticulosCategoria>>> DeleteCategoria(ArticulosCategoria categoria)
         {
             try
             {
@@ -205,9 +204,9 @@ namespace Api.Controllers.Inventario
         /// </summary>
         /// <param name="connection">Cadena de conexión a la base de datos.</param>
         /// <returns>Todas las categorías de la tabla tblcategorias.</returns>
-        private static async Task<IEnumerable<Categorias>> SelectAllCategorias(SqlConnection connection)
+        private static async Task<IEnumerable<ArticulosCategoria>> SelectAllCategorias(SqlConnection connection)
         {
-            return await connection.QueryAsync<Categorias>("select * from tblcategorias");
+            return await connection.QueryAsync<ArticulosCategoria>("select * from tblcategorias");
         }
 
         /// <summary>
@@ -216,9 +215,9 @@ namespace Api.Controllers.Inventario
         /// <param name="connection">Cadena de conexión a la base de datos.</param>
         /// <param name="id">Identificador de la categoría.</param>
         /// <returns>La categoría que corresponde al ID <paramref name="id"/> en la base de datos.</returns>
-        private static async Task<IEnumerable<Categorias>> SelectCategoriaId(SqlConnection connection, int id)
+        private static async Task<IEnumerable<ArticulosCategoria>> SelectCategoriaId(SqlConnection connection, int id)
         {
-            return await connection.QueryAsync<Categorias>("select * from tblcategorias where id = @Id", new { id });
+            return await connection.QueryAsync<ArticulosCategoria>("select * from articuloscategoria where id = @Id", new { id });
         }
     }
 }

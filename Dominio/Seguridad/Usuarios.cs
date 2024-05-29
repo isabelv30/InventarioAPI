@@ -3,10 +3,12 @@
     public class Usuarios
     {
         public int Id { get; set; }
-        public string Usuario { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public int RolId { get; set; }
         public int PersonaId { get; set; }
-        public bool CambioClave { get; set; }
 
+        public Roles? Rol {  get; set; }
         public Personas? Persona { get; set; }
     }
 }

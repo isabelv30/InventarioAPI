@@ -1,9 +1,7 @@
-﻿using Api.Controllers.General;
-using Api.Dominio.Seguridad;
+﻿using Api.Dominio.Seguridad;
 using Api.Errors;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.Design.Serialization;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -35,7 +33,9 @@ namespace Api.Controllers.Seguridad
             {
                 using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
                 {
-                    var personas = await connection.QueryAsync<Personas>("Sp_Personas_Select", null, commandType: CommandType.StoredProcedure);
+                    //var personas = await connection.QueryAsync<Personas>("Sp_Personas_Select", null, commandType: CommandType.StoredProcedure);
+
+                    var personas = await connection.QueryAsync<Personas>("select * from personas");
 
                     if (personas.Any())
                     {

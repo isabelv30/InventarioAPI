@@ -1,12 +1,8 @@
-﻿using Api.Controllers;
-using Api.Dominio.Inventario;
+﻿using Api.Dominio.Inventario;
 using Api.Errors;
-using Aplicacion.ServiciosGlobales;
 using Aplicacion.Servicios;
-using Dapper;
+using Aplicacion.ServiciosGlobales;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Data.SqlClient;
 
 namespace Api.Controllers.Inventario
 {
@@ -34,7 +30,7 @@ namespace Api.Controllers.Inventario
             {
                 IServicioAplicacion<Articulos> repositorio = ServicioGlobal.Instance.ServiceProvider.GetRequiredService<IServicioAplicacion<Articulos>>();
                 // Se ejecuta una consulta SQL asincrónica para obtener todos los artículos.
-                var articulos = await repositorio.ProcedimientoSqlAsync<Articulos>("Sp_Acticulos_Select");
+                var articulos = await repositorio.EjecutarConsultaSqlAsync<Articulos>("select * from articulos");
 
                 if (articulos.Any())
                 {
@@ -65,15 +61,14 @@ namespace Api.Controllers.Inventario
         /// </summary>
         /// <param name="codigo">Obtiene un artículo por su ID.</param>
         /// <returns>El artículo específico que se consulta por el codigo.</returns>
-        /// <exception cref="ApiException">Se lanza si no se encuentra el artículo correspondiente al código <paramref name="codigo"/> del artículo.</exception>
-        [HttpGet("{codigo}")]
-        public async Task<ActionResult<Articulos>> GetArticulo(string codigo)
+        /// <exception cref="ApiException">Se lanza si no se encuentra el artículo correspondiente al id <paramref name="id"/> del artículo.</exception>
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Articulos>> GetArticulo(int id)
         {
             try
             {
                 IServicioAplicacion<Articulos> repositorio = ServicioGlobal.Instance.ServiceProvider.GetRequiredService<IServicioAplicacion<Articulos>>();
-                var articulo = await repositorio.EjecutarConsultaSqlAsync<Articulos>("select * from tblarticulos where codigo = @Codigo",
-                        new { Codigo = codigo });
+                var articulo = await repositorio.EjecutarConsultaSqlAsync<Articulos>($"select * from articulos where id = {id}");
                 
                 if (articulo.Any())
                 {
@@ -81,9 +76,8 @@ namespace Api.Controllers.Inventario
                 }
                 else
                 {
-                    throw new ApiException(404, "El artículo con el código '" + codigo + "' no está registrado.");
+                    throw new ApiException(404, "El artículo con el ID '" + id.ToString() + "' no está registrado.");
                 }
-                
             }
             catch (ApiException)
             {
@@ -91,7 +85,7 @@ namespace Api.Controllers.Inventario
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al obtener el artículo " + codigo);
+                _logger.LogError(ex, "Error al obtener el artículo " + id);
                 throw new ApiException(500, "Ha ocurrido un error interno al obtener el artículo. Detalle: " + ex.Message);
             }
         }
@@ -108,28 +102,24 @@ namespace Api.Controllers.Inventario
             try
             {
                 // Validación si esxiste el artículo
-                var validacion = await SelectArticuloId(articulo.Codigo);
+                var validacion = await SelectArticuloId(articulo.Id);
 
                 if (validacion == null)
                 {
                     IServicioAplicacion<Articulos> repositorio = ServicioGlobal.Instance.ServiceProvider.GetRequiredService<IServicioAplicacion<Articulos>>();
-                    
+
                     // Genera el objeto para la petición
-                    //object param = new {
-                    //    Id = articulo.Id,
-                    //    Codigo = articulo.Codigo,
-                    //    Stock = articulo.Stock,
-                    //    Nombre = articulo.Nombre,
-                    //    Descripcion = articulo.Descripcion,
-                    //    PrecioCompra = articulo.PrecioCompra,
-                    //    PrecioVenta = articulo.PrecioVenta,
-                    //    CategoriaId = articulo.CategoriaId,
-                    //    UnidadMedidaId = articulo.UnidadMedidaId,
-                    //    EstadoId = articulo.EstadoId
-                    //};
+                    object param = new
+                    {
+                        p_nombre = articulo.Nombre,
+                        p_descripcion = articulo.Descripcion,
+                        p_precio = articulo.Precio,
+                        p_stock = articulo.Stock,
+                        p_CategoriaId = articulo.CategoriaId
+                    };
 
                     // Inserta el artículo en la base de datos
-                    var result = await repositorio.ProcedimientoSqlAsync<Articulos>("Sp_Acticulos_Insert", articulo);
+                    var result = await repositorio.ProcedimientoSqlAsync<Articulos>("SpArticulosInsertar", param);
 
                     // Respuesta exitosa que devuelve todos los artículos de la base de datos
                     return Ok(await SelectAllArticulos());
@@ -137,7 +127,7 @@ namespace Api.Controllers.Inventario
                 else
                 {
                     // En caso de que el artículo ya exista
-                    throw new ApiException(409, "El artículo con el código '" + articulo.Codigo + "' ya está registrado.");
+                    throw new ApiException(409, "El artículo con el código '" + articulo.Id + "' ya está registrado.");
                 }
             }
             catch (ApiException)
@@ -162,17 +152,28 @@ namespace Api.Controllers.Inventario
         {
             try
             {
-                
-                var result = await SelectArticuloId(articulo.Codigo);
+                var result = await SelectArticuloId(articulo.Id);
                 if (result != null)
                 {
                     IServicioAplicacion<Articulos> repositorio = ServicioGlobal.Instance.ServiceProvider.GetRequiredService<IServicioAplicacion<Articulos>>();
-                    await repositorio.ProcedimientoSqlAsync<Articulos>("Sp_Acticulos_Update", articulo);
+
+                    // Genera el objeto para la petición
+                    object param = new
+                    {
+                        p_id = articulo.Id,
+                        p_nombre = articulo.Nombre,
+                        p_descripcion = articulo.Descripcion,
+                        p_precio = articulo.Precio,
+                        p_stock = articulo.Stock,
+                        p_CategoriaId = articulo.CategoriaId
+                    };
+
+                    await repositorio.ProcedimientoSqlAsync<Articulos>("SpArticulosActualizar", param);
                     return Ok(await SelectAllArticulos());
                 }
                 else
                 {
-                    throw new ApiException(404, "El artículo con el código '" + articulo.Codigo + "' no está registrado.");
+                    throw new ApiException(404, $"El artículo con el código '{articulo.Id}' no está registrado.");
                 }
             }
             catch (ApiException)
@@ -197,16 +198,16 @@ namespace Api.Controllers.Inventario
         {
             try
             {
-                var result = await SelectArticuloId(articulo.Codigo);
+                var result = await SelectArticuloId(articulo.Id);
                 if (result != null)
                 {
                     IServicioAplicacion<Articulos> repositorio = ServicioGlobal.Instance.ServiceProvider.GetRequiredService<IServicioAplicacion<Articulos>>();
-                    await repositorio.ProcedimientoSqlAsync<Articulos>("Sp_Articulos_Delete", new { codigo = articulo.Codigo });
+                    await repositorio.EjecutarConsultaSqlAsync<Articulos>($"delete from articulos where id = {articulo.Id}");
                     return Ok(await SelectAllArticulos());
                 }
                 else
                 {
-                    throw new ApiException(404, "El artículo con el código '" + articulo.Codigo + "' no está registrado.");
+                    throw new ApiException(404, $"El artículo con el código '{articulo.Id}' no está registrado.");
                 }
                 
             }
@@ -216,7 +217,7 @@ namespace Api.Controllers.Inventario
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al eliminar el artículo " + articulo.Id);
+                _logger.LogError(ex, $"Error al eliminar el artículo {articulo.Id}");
                 throw new ApiException(500, "Ha ocurrido un error interno al eliminar el artículo. Detalle: " + ex.Message);
             }
         }
@@ -228,7 +229,7 @@ namespace Api.Controllers.Inventario
         private static async Task<IEnumerable<Articulos>> SelectAllArticulos()
         {
             IServicioAplicacion<Articulos> repositorio = ServicioGlobal.Instance.ServiceProvider.GetRequiredService<IServicioAplicacion<Articulos>>();
-            return await repositorio.EjecutarConsultaSqlAsync<Articulos>("select * from tblarticulos", null);
+            return await repositorio.EjecutarConsultaSqlAsync<Articulos>("select * from articulos", null);
         }
 
         /// <summary>
@@ -236,10 +237,11 @@ namespace Api.Controllers.Inventario
         /// </summary>
         /// <param name="codigo">Identificador del artículo.</param>
         /// <returns>El artículo que se está consultando.</returns>
-        private static async Task<Articulos> SelectArticuloId(string codigo)
+        private static async Task<Articulos> SelectArticuloId(int id)
         {
             IServicioAplicacion<Articulos> repositorio = ServicioGlobal.Instance.ServiceProvider.GetRequiredService<IServicioAplicacion<Articulos>>();
-            return await repositorio.EjecutarScalarSqlAsync<Articulos>("select * from tblarticulos where codigo = @Codigo", new { Codigo = codigo });
+            var response = await repositorio.EjecutarConsultaSqlAsync<Articulos>($"select * from articulos where id = {id}");
+            return response.FirstOrDefault();
         }
     }
 }

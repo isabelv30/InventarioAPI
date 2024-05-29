@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
+﻿using MySql.Data.MySqlClient;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AccesoDatos.Conexion
 {
@@ -31,7 +26,7 @@ namespace AccesoDatos.Conexion
         /// <returns>Una tarea que representa la conexión a la base de datos.</returns>
         public async Task<IDbConnection> CrearCadenaAsync()
         {
-            var connection = new SqlConnection(connectionString);
+            var connection = new MySqlConnection(connectionString);
             await connection.OpenAsync();
             return connection;
         }
