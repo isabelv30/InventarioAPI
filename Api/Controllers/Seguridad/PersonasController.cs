@@ -1,9 +1,12 @@
 ﻿using Api.Dominio.Seguridad;
 using Api.Errors;
+using Aplicacion.Servicios;
+using Aplicacion.ServiciosGlobales;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Data.SqlClient;
+using System.Drawing;
 
 namespace Api.Controllers.Seguridad
 {
@@ -11,13 +14,10 @@ namespace Api.Controllers.Seguridad
     [Route("api/[controller]")]
     public class PersonasController : Controller
     {
-        private readonly IConfiguration _configuration;
         private readonly ILogger<PersonasController> _logger;
 
-        public PersonasController(ILogger<PersonasController> logger,
-            IConfiguration configuration)
+        public PersonasController(ILogger<PersonasController> logger)
         {
-            _configuration = configuration;
             _logger = logger;
         }
 
@@ -31,20 +31,18 @@ namespace Api.Controllers.Seguridad
         {
             try
             {
-                using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+                IServicioAplicacion<Personas> repositorio = ServicioGlobal.Instance.ServiceProvider.GetRequiredService<IServicioAplicacion<Personas>>();
+                // Se ejecuta una consulta SQL asincrónica para obtener todos los usuarios.
+                var personas = await repositorio.EjecutarConsultaSqlAsync<Personas>("select * from personas");
+
+                if (personas.Any())
                 {
-                    //var personas = await connection.QueryAsync<Personas>("Sp_Personas_Select", null, commandType: CommandType.StoredProcedure);
-
-                    var personas = await connection.QueryAsync<Personas>("select * from personas");
-
-                    if (personas.Any())
-                    {
-                        return Ok(personas.ToList());
-                    }
-                    else
-                    {
-                        throw new ApiException(404, "No hay personas registradas.");
-                    }
+                    // Si se encontraron usuarios, se devuelve una respuesta exitosa con la lista de usuarios.
+                    return Ok(personas.ToList());
+                }
+                else
+                {
+                    throw new ApiException(404, "No hay personas registrados.");
                 }
             }
             catch (ApiException)
@@ -69,20 +67,16 @@ namespace Api.Controllers.Seguridad
         {
             try
             {
-                using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-                {
-                    var persona = await connection.QueryAsync<Personas>("Sp_Personas_Select_Id",
-                        new { identificacion }, 
-                        commandType: CommandType.StoredProcedure);
+                IServicioAplicacion<Personas> repositorio = ServicioGlobal.Instance.ServiceProvider.GetRequiredService<IServicioAplicacion<Personas>>();
+                var persona = await repositorio.EjecutarConsultaSqlAsync<Personas>($"select * from personas where identificacion = {identificacion}");
 
-                    if (persona.Any())
-                    {
-                        return Ok(persona.First());
-                    }
-                    else
-                    {
-                        throw new ApiException(404, "La persona con la identificación '" + identificacion + "' no está registrada.");
-                    }
+                if (persona.Any())
+                {
+                    return Ok(persona.First());
+                }
+                else
+                {
+                    throw new ApiException(404, "La persona con el número de identificación '" + identificacion.ToString() + "' no está registrada.");
                 }
             }
             catch (ApiException)
@@ -107,18 +101,36 @@ namespace Api.Controllers.Seguridad
         {
             try
             {
-                using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+                // Validación si esxiste el usuario
+                var validacion = await SelectPersonaId(persona.Id.ToString());
+
+                if (validacion == null)
                 {
-                    var result = await SelectPersonaId(connection, persona.Identificacion);
-                    if (!result.Any())
+                    IServicioAplicacion<Personas> repositorio = ServicioGlobal.Instance.ServiceProvider.GetRequiredService<IServicioAplicacion<Personas>>();
+
+                    // Genera el objeto para la petición
+                    object param = new
                     {
-                        await connection.ExecuteAsync("Sp_Personas_Insert", persona, commandType: CommandType.StoredProcedure);
-                        return Ok(await SelectAllPersonas(connection));
-                    }
-                    else
-                    {
-                        throw new ApiException(409, "La persona con el número de identificación '" + persona.Identificacion + "' ya está registrada.");
-                    }
+                        p_tipoIdentificacion = persona.TipoIdentificacion,
+                        p_identificacion = persona.Identificacion,
+                        p_nombre = persona.Nombre,
+                        p_apellido = persona.Apellido,
+                        p_activo = persona.Activo,
+                        p_tipoPersona = persona.TipoPersona,
+                        p_direccion = persona.Direccion,
+                        p_correo = persona.Correo,
+                    };
+
+                    // Inserta el usuario en la base de datos
+                    var result = await repositorio.ProcedimientoSqlAsync<Usuarios>("SpPersonasInsertar", param);
+
+                    // Respuesta exitosa que devuelve todos los usuarios de la base de datos
+                    return Ok(await SelectAllPersonas());
+                }
+                else
+                {
+                    // En caso de que el usuario ya exista
+                    throw new ApiException(409, "La persona con el número de identificación '" + persona.Identificacion + "' ya está registrada.");
                 }
             }
             catch (ApiException)
@@ -143,18 +155,31 @@ namespace Api.Controllers.Seguridad
         {
             try
             {
-                using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+                var result = await SelectPersonaId(persona.Identificacion);
+                if (result != null)
                 {
-                    var result = await SelectPersonaId(connection, persona.Identificacion);
-                    if (result.Any())
+                    IServicioAplicacion<Personas> repositorio = ServicioGlobal.Instance.ServiceProvider.GetRequiredService<IServicioAplicacion<Personas>>();
+
+                    // Genera el objeto para la petición
+                    object param = new
                     {
-                        await connection.ExecuteAsync("Sp_Personas_Update", persona, commandType: CommandType.StoredProcedure);
-                        return Ok(await SelectAllPersonas(connection));
-                    }
-                    else
-                    {
-                        throw new ApiException(404, "La persona con la identificación '" + persona.Identificacion + "' no está registrada.");
-                    }
+                        p_id = persona.Id,
+                        p_tipoIdentificacion = persona.TipoIdentificacion,
+                        p_identificacion = persona.Identificacion,
+                        p_nombre = persona.Nombre,
+                        p_apellido = persona.Apellido,
+                        p_activo = persona.Activo,
+                        p_tipoPersona = persona.TipoPersona,
+                        p_direccion = persona.Direccion,
+                        p_correo = persona.Correo,
+                    };
+
+                    await repositorio.ProcedimientoSqlAsync<Personas>("SpPersonasActualizar", param);
+                    return Ok(await SelectAllPersonas());
+                }
+                else
+                {
+                    throw new ApiException(404, $"La persona con el número de identificación '{persona.Identificacion}' no está registrada.");
                 }
             }
             catch (ApiException)
@@ -179,21 +204,16 @@ namespace Api.Controllers.Seguridad
         {
             try
             {
-                using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+                var result = await SelectPersonaId(persona.Identificacion);
+                if (result != null)
                 {
-                    var result = await SelectPersonaId(connection, persona.Identificacion);
-                    if (result.Any())
-                    {
-                        await connection.ExecuteAsync("Sp_Personas_Delete", 
-                            new { identificacion = persona.Identificacion }, 
-                            commandType: CommandType.StoredProcedure);
-
-                        return Ok(await SelectAllPersonas(connection));
-                    }
-                    else
-                    {
-                        throw new ApiException(404, "La persona con la identificación '" + persona.Identificacion + "' no está registrada.");
-                    }
+                    IServicioAplicacion<Usuarios> repositorio = ServicioGlobal.Instance.ServiceProvider.GetRequiredService<IServicioAplicacion<Usuarios>>();
+                    await repositorio.EjecutarConsultaSqlAsync<Usuarios>($"delete from personas where id = {persona.Id}");
+                    return Ok(await SelectAllPersonas());
+                }
+                else
+                {
+                    throw new ApiException(404, $"La persona con el número de identificación '{persona.Identificacion}' no está registrada.");
                 }
             }
             catch (ApiException)
@@ -207,25 +227,17 @@ namespace Api.Controllers.Seguridad
             }
         }
 
-        /// <summary>
-        /// Selecciona todas las personas.
-        /// </summary>
-        /// <param name="connection">Cadena de conexión a la base de datos.</param>
-        /// <returns>Todas las personas de la tabla tblpersonas.</returns>
-        private static async Task<IEnumerable<Personas>> SelectAllPersonas(SqlConnection connection)
+        private static async Task<IEnumerable<Personas>> SelectAllPersonas()
         {
-            return await connection.QueryAsync<Personas>("select * from tblpersonas");
+            IServicioAplicacion<Personas> repositorio = ServicioGlobal.Instance.ServiceProvider.GetRequiredService<IServicioAplicacion<Personas>>();
+            return await repositorio.EjecutarConsultaSqlAsync<Personas>("select * from personas", null);
         }
 
-        /// <summary>
-        /// Consulta una persona por su identificador.
-        /// </summary>
-        /// <param name="connection">Cadena de conexión a la base de datos.</param>
-        /// <param name="id">Identificador de la personas.</param>
-        /// <returns>La persona que corresponde a la <paramref name="identificacion"/> en la base de datos.</returns>
-        private static async Task<IEnumerable<Personas>> SelectPersonaId(SqlConnection connection, string identificacion)
+        private static async Task<Personas> SelectPersonaId(string id)
         {
-            return await connection.QueryAsync<Personas>("select * from tblpersonas where identificacion = @identificacion", new { identificacion });
+            IServicioAplicacion<Personas> repositorio = ServicioGlobal.Instance.ServiceProvider.GetRequiredService<IServicioAplicacion<Personas>>();
+            var response = await repositorio.EjecutarConsultaSqlAsync<Personas>($"select * from personas where identificacion = {id}");
+            return response.FirstOrDefault();
         }
     }
 }

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "hVjZVz8B968yQt5JKYzEf30z2UmWZ2QtPKWw4y1i91n4RAo1iIkLZf19kKl+VPam91Z0PXdJ7glG0MZqQamuGA==",
+  "dgSpecHash": "0jTKbnf3pVo=",
   "success": true,
   "projectFilePath": "D:\\Me\\InventarioAPI\\Api\\Api.csproj",
   "expectedPackageFiles": [
@@ -75,5 +75,12 @@
     "C:\\Users\\ijaramillo\\.nuget\\packages\\system.windows.extensions\\6.0.0\\system.windows.extensions.6.0.0.nupkg.sha512",
     "C:\\Users\\ijaramillo\\.nuget\\packages\\zstdsharp.port\\0.7.1\\zstdsharp.port.0.7.1.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1900",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Error occurred while getting package vulnerability data: Unable to load the service index for source https://api.nuget.org/v3/index.json."
+    }
+  ]
 }

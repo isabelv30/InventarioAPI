@@ -34,7 +34,6 @@ namespace Api.Controllers.Facturacion
                 {
                     throw new ApiException(404, "No hay registros registrados.");
                 }
-
             }
             catch (ApiException)
             {
@@ -78,12 +77,12 @@ namespace Api.Controllers.Facturacion
         }
 
         [HttpPost]
-        public async Task<ActionResult<List<Registros>>> CreateRegistro(Registros Registro)
+        public async Task<ActionResult<List<Registros>>> CreateRegistro(Registros registro)
         {
             try
             {
                 // Validación si esxiste el registro
-                var validacion = await SelectRegistroId(Registro.Id);
+                var validacion = await SelectRegistroId(registro.Id);
 
                 if (validacion == null)
                 {
@@ -92,24 +91,40 @@ namespace Api.Controllers.Facturacion
                     // Genera el objeto para la petición
                     object param = new
                     {
-                        p_fecha = Registro.Fecha,
-                        p_responsableId = Registro.ResponsableId,
-                        p_clienteId = Registro.ClienteId,
-                        p_tipoRegistro = Registro.TipoRegistro,
-                        p_total = Registro.Total,
-                        p_comentario = Registro.Comentario
+                        p_fecha = registro.Fecha,
+                        p_responsableId = registro.ResponsableId,
+                        p_clienteId = registro.ClienteId,
+                        p_tipoRegistro = registro.TipoRegistro,
+                        p_total = registro.Total,
+                        p_comentario = registro.Comentario
                     };
 
                     // Inserta el registro en la base de datos
                     var result = await repositorio.ProcedimientoSqlAsync<Registros>("SpRegistrosInsertar", param);
 
+                    var registros = await SelectAllRegistros();
+
+                    if (registro.RegistroDetalle != null)
+                    {
+                        foreach (var detalle in registro.RegistroDetalle)
+                        {
+                            object paramDet = new
+                            {
+                                p_registroId = registros.Last().Id,
+                                p_articuloId = detalle.ArticuloId,
+                                p_cantidad = detalle.Cantidad,
+                            };
+                            await repositorio.ProcedimientoSqlAsync<RegistrosDetalles>("SpRegistrosDetallesInsertar", param);
+                        }
+                    }
+
                     // Respuesta exitosa que devuelve todos los registros de la base de datos
-                    return Ok(await SelectAllRegistros());
+                    return Ok(registros);
                 }
                 else
                 {
                     // En caso de que el registro ya exista
-                    throw new ApiException(409, "El registro con el código '" + Registro.Id + "' ya está registrado.");
+                    throw new ApiException(409, "El registro con el código '" + registro.Id + "' ya está registrado.");
                 }
             }
             catch (ApiException)

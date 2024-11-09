@@ -12,7 +12,6 @@ namespace Api.Controllers.Inventario
     {
         private readonly ILogger<ArticulosController> _logger;
         
-
         public ArticulosController(ILogger<ArticulosController> logger)
         {
             _logger = logger;
