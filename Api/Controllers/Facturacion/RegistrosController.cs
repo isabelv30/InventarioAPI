@@ -2,10 +2,12 @@
 using Aplicacion.Servicios;
 using Aplicacion.ServiciosGlobales;
 using Dominio.Facturacion;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers.Facturacion
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class RegistrosController : ControllerBase

@@ -4,10 +4,12 @@ using Api.Errors;
 using Aplicacion.Servicios;
 using Aplicacion.ServiciosGlobales;
 using Dominio.Facturacion;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers.Seguridad
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class RolesController : ControllerBase

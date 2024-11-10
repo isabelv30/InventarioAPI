@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Me\\InventarioAPI\\Api\\Api.csproj": {}
+    "C:\\Users\\USER\\Documents\\Projects\\InventarioAPI\\Api\\Api.csproj": {}
   },
   "projects": {
-    "D:\\Me\\InventarioAPI\\AccesoDatos\\AccesoDatos.csproj": {
+    "C:\\Users\\USER\\Documents\\Projects\\InventarioAPI\\AccesoDatos\\AccesoDatos.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Me\\InventarioAPI\\AccesoDatos\\AccesoDatos.csproj",
+        "projectUniqueName": "C:\\Users\\USER\\Documents\\Projects\\InventarioAPI\\AccesoDatos\\AccesoDatos.csproj",
         "projectName": "AccesoDatos",
-        "projectPath": "D:\\Me\\InventarioAPI\\AccesoDatos\\AccesoDatos.csproj",
-        "packagesPath": "C:\\Users\\ijaramillo\\.nuget\\packages\\",
-        "outputPath": "D:\\Me\\InventarioAPI\\AccesoDatos\\obj\\",
+        "projectPath": "C:\\Users\\USER\\Documents\\Projects\\InventarioAPI\\AccesoDatos\\AccesoDatos.csproj",
+        "packagesPath": "C:\\Users\\USER\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\USER\\Documents\\Projects\\InventarioAPI\\AccesoDatos\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\ijaramillo\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\USER\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -79,29 +79,29 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.302\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\Me\\InventarioAPI\\Api\\Api.csproj": {
+    "C:\\Users\\USER\\Documents\\Projects\\InventarioAPI\\Api\\Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Me\\InventarioAPI\\Api\\Api.csproj",
+        "projectUniqueName": "C:\\Users\\USER\\Documents\\Projects\\InventarioAPI\\Api\\Api.csproj",
         "projectName": "Api",
-        "projectPath": "D:\\Me\\InventarioAPI\\Api\\Api.csproj",
-        "packagesPath": "C:\\Users\\ijaramillo\\.nuget\\packages\\",
-        "outputPath": "D:\\Me\\InventarioAPI\\Api\\obj\\",
+        "projectPath": "C:\\Users\\USER\\Documents\\Projects\\InventarioAPI\\Api\\Api.csproj",
+        "packagesPath": "C:\\Users\\USER\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\USER\\Documents\\Projects\\InventarioAPI\\Api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\ijaramillo\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\USER\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net6.0"
+          "net8.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
@@ -109,14 +109,14 @@
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net6.0": {
-            "targetAlias": "net6.0",
+          "net8.0": {
+            "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\Me\\InventarioAPI\\Aplicacion\\Aplicacion.csproj": {
-                "projectPath": "D:\\Me\\InventarioAPI\\Aplicacion\\Aplicacion.csproj"
+              "C:\\Users\\USER\\Documents\\Projects\\InventarioAPI\\Aplicacion\\Aplicacion.csproj": {
+                "projectPath": "C:\\Users\\USER\\Documents\\Projects\\InventarioAPI\\Aplicacion\\Aplicacion.csproj"
               },
-              "D:\\Me\\InventarioAPI\\Dominio\\Dominio.csproj": {
-                "projectPath": "D:\\Me\\InventarioAPI\\Dominio\\Dominio.csproj"
+              "C:\\Users\\USER\\Documents\\Projects\\InventarioAPI\\Dominio\\Dominio.csproj": {
+                "projectPath": "C:\\Users\\USER\\Documents\\Projects\\InventarioAPI\\Dominio\\Dominio.csproj"
               }
             }
           }
@@ -133,16 +133,20 @@
         }
       },
       "frameworks": {
-        "net6.0": {
-          "targetAlias": "net6.0",
+        "net8.0": {
+          "targetAlias": "net8.0",
           "dependencies": {
             "Dapper": {
               "target": "Package",
               "version": "[2.0.151, )"
             },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.10, )"
+            },
             "Microsoft.Data.SqlClient": {
               "target": "Package",
-              "version": "[5.1.1, )"
+              "version": "[5.2.2, )"
             },
             "Microsoft.IdentityModel.Tokens": {
               "target": "Package",
@@ -180,24 +184,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.302/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\Me\\InventarioAPI\\Aplicacion\\Aplicacion.csproj": {
+    "C:\\Users\\USER\\Documents\\Projects\\InventarioAPI\\Aplicacion\\Aplicacion.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Me\\InventarioAPI\\Aplicacion\\Aplicacion.csproj",
+        "projectUniqueName": "C:\\Users\\USER\\Documents\\Projects\\InventarioAPI\\Aplicacion\\Aplicacion.csproj",
         "projectName": "Aplicacion",
-        "projectPath": "D:\\Me\\InventarioAPI\\Aplicacion\\Aplicacion.csproj",
-        "packagesPath": "C:\\Users\\ijaramillo\\.nuget\\packages\\",
-        "outputPath": "D:\\Me\\InventarioAPI\\Aplicacion\\obj\\",
+        "projectPath": "C:\\Users\\USER\\Documents\\Projects\\InventarioAPI\\Aplicacion\\Aplicacion.csproj",
+        "packagesPath": "C:\\Users\\USER\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\USER\\Documents\\Projects\\InventarioAPI\\Aplicacion\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\ijaramillo\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\USER\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -213,8 +217,8 @@
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "D:\\Me\\InventarioAPI\\AccesoDatos\\AccesoDatos.csproj": {
-                "projectPath": "D:\\Me\\InventarioAPI\\AccesoDatos\\AccesoDatos.csproj"
+              "C:\\Users\\USER\\Documents\\Projects\\InventarioAPI\\AccesoDatos\\AccesoDatos.csproj": {
+                "projectPath": "C:\\Users\\USER\\Documents\\Projects\\InventarioAPI\\AccesoDatos\\AccesoDatos.csproj"
               }
             }
           }
@@ -255,24 +259,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.302\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\Me\\InventarioAPI\\Dominio\\Dominio.csproj": {
+    "C:\\Users\\USER\\Documents\\Projects\\InventarioAPI\\Dominio\\Dominio.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Me\\InventarioAPI\\Dominio\\Dominio.csproj",
+        "projectUniqueName": "C:\\Users\\USER\\Documents\\Projects\\InventarioAPI\\Dominio\\Dominio.csproj",
         "projectName": "Dominio",
-        "projectPath": "D:\\Me\\InventarioAPI\\Dominio\\Dominio.csproj",
-        "packagesPath": "C:\\Users\\ijaramillo\\.nuget\\packages\\",
-        "outputPath": "D:\\Me\\InventarioAPI\\Dominio\\obj\\",
+        "projectPath": "C:\\Users\\USER\\Documents\\Projects\\InventarioAPI\\Dominio\\Dominio.csproj",
+        "packagesPath": "C:\\Users\\USER\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\USER\\Documents\\Projects\\InventarioAPI\\Dominio\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\ijaramillo\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\USER\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -320,7 +324,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.302\\RuntimeIdentifierGraph.json"
         }
       }
     }

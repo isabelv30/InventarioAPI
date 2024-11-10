@@ -1,11 +1,13 @@
 ﻿using Api.Dominio.Inventario;
 using Api.Errors;
 using Dapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlClient;
 
 namespace Api.Controllers.Inventario
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class CategoriasController : Controller

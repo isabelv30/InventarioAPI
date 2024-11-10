@@ -2,10 +2,12 @@
 using Api.Errors;
 using Aplicacion.Servicios;
 using Aplicacion.ServiciosGlobales;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers.Inventario
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ArticulosController : ControllerBase

@@ -2,10 +2,12 @@
 using Api.Errors;
 using Aplicacion.Servicios;
 using Aplicacion.ServiciosGlobales;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers.Seguridad
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class UsuariosController : ControllerBase
@@ -16,6 +18,7 @@ namespace Api.Controllers.Seguridad
             _logger = logger;
         }
 
+        //[Authorize]
         [HttpGet]
         public async Task<ActionResult<List<Usuarios>>> GetAllUsuarios()
         {
@@ -54,8 +57,15 @@ namespace Api.Controllers.Seguridad
         {
             try
             {
+                if (id <= 0)
+                {
+                    return BadRequest("El ID proporcionado no es válido.");
+                }
+
                 IServicioAplicacion<Usuarios> repositorio = ServicioGlobal.Instance.ServiceProvider.GetRequiredService<IServicioAplicacion<Usuarios>>();
-                var usuario = await repositorio.EjecutarConsultaSqlAsync<Usuarios>($"select * from usuarios where id = {id}");
+
+                var query = "SELECT * FROM usuarios WHERE id = @Id";
+                var usuario = await repositorio.EjecutarConsultaSqlAsync<Usuarios>(query, new { Id = id });
 
                 if (usuario.Any())
                 {

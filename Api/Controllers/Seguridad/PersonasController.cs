@@ -2,14 +2,12 @@
 using Api.Errors;
 using Aplicacion.Servicios;
 using Aplicacion.ServiciosGlobales;
-using Dapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
-using System.Data.SqlClient;
-using System.Drawing;
 
 namespace Api.Controllers.Seguridad
 {
+    
     [ApiController]
     [Route("api/[controller]")]
     public class PersonasController : Controller
@@ -26,6 +24,7 @@ namespace Api.Controllers.Seguridad
         /// </summary>
         /// <returns>Una lista de las personas en la base de datos.</returns>
         /// <exception cref="ApiException">Se lanza si no se encuentran personas registradas.</exception>
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<List<Personas>>> GetAllPersonas()
         {
@@ -68,7 +67,8 @@ namespace Api.Controllers.Seguridad
             try
             {
                 IServicioAplicacion<Personas> repositorio = ServicioGlobal.Instance.ServiceProvider.GetRequiredService<IServicioAplicacion<Personas>>();
-                var persona = await repositorio.EjecutarConsultaSqlAsync<Personas>($"select * from personas where identificacion = {identificacion}");
+                var query = "SELECT * FROM personas WHERE identificacion = @identificacion";
+                var persona = await repositorio.EjecutarConsultaSqlAsync<Usuarios>(query, new { identificacion = identificacion });
 
                 if (persona.Any())
                 {
